@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ness</title>
+</head>
+<body>
+   <header>
+    <h1>
+Dev School- Play my game!
+    </h1>
+    <button onclick="newGame()">New Game</button>
+    <p>Player Score: <span id="score"></span></p>
+    
+    <p> Chances: <span id="chances"></span>
+    </p>
+
+    <p id="winMessage">Winner Winner Chicken Dinner!!!</p>
+    <p id="gameOver">No Soup For You!</p>
+   </header> 
+   <svg height="250" width="200" stroke="#78BE20" fill="transparent">
+    <!--  Gallows  -->
+    <line x1="20" y1="20" x2="140" y2="20"/>
+    <line x1="140" y1="20" x2="140" y2="50"/>
+    <line x1="60" y1="20" x2="60" y2="230"/>
+    <line x1="20" y1="230" x2="180" y2="230"/>
+    <!--  Head  -->
+    <circle id="head" cx="140" cy="70" r="20"/>
+    <!--  Body  -->
+    <line id="body" x1="140" y1="90" x2="140" y2="150"/>
+    <!--  Arms  -->
+    <line id="leftArm" x1="140" y1="120" x2="120" y2="100"/>
+    <line id="rightArm" x1="140" y1="120" x2="160" y2="100"/>
+    <!--  Legs  -->
+    <line id="leftLeg" x1="140" y1="150" x2="120" y2="180"/>
+    <line id="rightLeg" x1="140" y1="150" x2="160" y2="180"/>
+    </svg>
+<div><p id="word">_ _ _ _ _ </p>
+
+<ul id="incorrectGuesses">
+</ul></div>
+    <div id="buttons">
+       <button>A</button>
+      
+    </div>
+    <script src="words.js"></script>
+    <script>
+let alphabet =['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+
+
+var word = ''
+
+var guesses = []
+
+var isWinner = false
+
+let chances
+
+let score = 0
+
+function newGame() {
+    word = newWord()
+    guesses =  []
+    buildLetterTiles()
+    isWinner = false
+    chances = 6
+    document.getElementById('score').innerHTML = score
+    document.getElementById('chances').innerHTML = chances
+    document.getElementById('incorrectGuesses').innerHTML = ''
+    document.getElementById('winMessage').style.display = 'none'
+    document.getElementById('gameOver').style.display = 'none'
+
+    document.getElementById("head").style.display= "none"
+    document.getElementById("body").style.display= "none"
+    document.getElementById("leftArm").style.display= "none"
+    document.getElementById("rightArm").style.display= "none"
+    document.getElementById("leftLeg").style.display= "none"
+    document.getElementById("rightLeg").style.display= "none"
+    console.log(word)
+
+}
+function newWord() {
+     let word = words[Math.floor(Math.random() * words.length)]
+     return word.toLowerCase()
+}
+function alphabetButtons() {
+
+    var buttons=''
+    for(character=0; character<alphabet.length; character++) {
+    buttons += '<button onclick="guess(\'' +alphabet[character] + '\')">' + alphabet[character] + '</button>'
+
+
+    }
+
+    document.getElementById('buttons').innerHTML = buttons
+  
+}
+function guess(letter) {
+    if (chances === 0 || isWinner) {
+        return
+    
+    }
+    letter = letter.toLowerCase()
+
+    
+
+    if (guesses.includes(letter)) {
+
+        alert("already selected")
+        return
+    }
+    
+    guesses.push(letter)
+
+    let correctGuess = false
+
+    if (word.toLowerCase().split('').includes(letter)) {
+        correctGuess = true
+        buildLetterTiles()
+
+
+    } 
+        
+    if (correctGuess === false) {
+        chances--
+        hang()
+        document.getElementById('chances').innerHTML = chances
+
+        let currentIncorrectGuesses = document.getElementById('incorrectGuesses').innerHTML
+        document.getElementById('incorrectGuesses').innerHTML = currentIncorrectGuesses + ',' + letter
+    }
+
+    if (chances === 0) {
+
+    document.getElementById('gameOver').style.display = 'inline-block'
+    score = 0
+    document.getElementById('word').innerHTML = word
+    }
+
+}
+
+function hang() {
+    if (chances === 5) {
+        document.getElementById("head").style.display= "block"
+    }
+    if (chances === 4) {
+        document.getElementById("body").style.display= "block"
+    }
+    if (chances === 3) {
+        document.getElementById("leftArm").style.display= "block"
+    }
+    if (chances === 2) {
+        document.getElementById("rightArm").style.display= "block"
+    }
+    if (chances === 1) {
+        document.getElementById("leftLeg").style.display= "block"
+    }
+    if (chances === 0) {
+        document.getElementById("rightLeg").style.display= "block"
+    }
+
+}
+
+function buildLetterTiles() {
+    let tiles = ''
+    for (letter=0; letter < word.split('').length; letter++) {
+        if (guesses.includes(word[letter].toLowerCase()) || (word[letter] === ' ')) {
+            tiles += word[letter]
+            
+        }
+        else {
+            tiles += '*'
+
+        }
+    }
+    document.getElementById('word').innerHTML = tiles
+    if (tiles.includes('*') === false) {
+    console.log ('winner')
+    document.getElementById('winMessage').style.display = 'block'
+    score += (chances) * 100
+    document.getElementById('score').innerHTML = score
+    isWinner = true
+
+    }
+
+
+}
+
+
+
+
+
+
+
+alphabetButtons()
+newGame()
+
+
+function keyPressed(event){
+    if (event.keyCode>=65 && event.keyCode <=90) {
+        console.log(event.key)
+        guess(event.key)
+    }
+    
+    
+
+
+
+}
+
+
+
+window.onkeyup = keyPressed
+
+
+
+
+    </script>
+    
+</body>
+</html>
